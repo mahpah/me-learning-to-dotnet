@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using superweb.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using superweb.Filters;
 
 namespace superweb
 {
@@ -34,6 +35,7 @@ namespace superweb
             // Add framework services.
             services.AddMvc(options => {
                 options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+                options.Filters.Add(new ExecuteTimeFilter());
             });
             /* or
              services.AddMvc()
