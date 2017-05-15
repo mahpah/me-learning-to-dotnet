@@ -7,7 +7,7 @@ using superweb.Models;
 namespace superweb.Controllers
 {
 	[Route("api/[controller]")]
-	public class TodoController
+	public class TodoController: Controller
 	{
 		private readonly ITodoRepository _todoRepository;
 
@@ -17,9 +17,9 @@ namespace superweb.Controllers
 		}
 
 		[HttpGet]
-		public IEnumerable<TodoItem> GetAll()
+		public IActionResult GetAll()
 		{
-			return _todoRepository.GetAll();
+			return Ok(_todoRepository.GetAll());
 		}
 
 		[HttpGet("{id}", Name = "GetTodo")]
@@ -38,7 +38,7 @@ namespace superweb.Controllers
 		{
 			if (item == null)
 			{
-				return new BadRequestResult();
+				return BadRequest();
 			}
 
 			_todoRepository.Add(item);
@@ -51,13 +51,13 @@ namespace superweb.Controllers
 		{
 			if (item == null || item.Key != id)
 			{
-				return new BadRequestResult();
+				return BadRequest();
 			}
 
 			var todo = _todoRepository.Find(id);
 			if (todo == null)
 			{
-				return new NotFoundResult();
+				return NotFound();
 			}
 
 			todo.IsComplete = item.IsComplete;
@@ -70,11 +70,11 @@ namespace superweb.Controllers
 			var todo = _todoRepository.Find(id);
 			if (todo == null)
 			{
-				return new NotFoundResult();
+				return NotFound();
 			}
 
 			_todoRepository.Remove(id);
-			return new NoContentResult();
+			return NoContent();
 		}
 	}
 }

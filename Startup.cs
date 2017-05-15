@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using superweb.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace superweb
 {
@@ -31,7 +32,13 @@ namespace superweb
         {
             services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase());
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc(options => {
+                options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+            });
+            /* or
+             services.AddMvc()
+                .AddXmlSerializerFormatters();
+            */
             services.AddScoped<ITodoRepository, TodoRepository>();
         }
 
