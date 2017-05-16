@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using superweb.Models.Postgres;
 
 namespace superweb.Models
 {
 	public class TodoRepository : ITodoRepository
 	{
-		private readonly DataContext _context;
+		private readonly PostgresDatabaseContext _context;
 
-		public TodoRepository(DataContext context)
+		public TodoRepository(PostgresDatabaseContext context)
 		{
 			_context = context;
 

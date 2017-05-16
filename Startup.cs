@@ -11,6 +11,7 @@ using superweb.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using superweb.Filters;
+using superweb.Models.Postgres;
 
 namespace superweb
 {
@@ -18,12 +19,12 @@ namespace superweb
     {
         public Startup(IHostingEnvironment env)
         {
-            var builder = new ConfigurationBuilder()
+            var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            Configuration = configBuilder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -31,7 +32,7 @@ namespace superweb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase());
+            services.AddDbContext<PostgresDatabaseContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Postgres")));
 
             // Add framework services.
             services.AddMvc(options => {
