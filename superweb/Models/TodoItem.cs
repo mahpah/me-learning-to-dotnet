@@ -6,6 +6,7 @@ namespace superweb.Models {
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public long Key { get; set; }
+		[Required]
 		public string Name { get; set; }
 		public bool IsComplete { get; set; }
 	}

@@ -7,9 +7,17 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/superweb.csproj"
+                "${workspaceRoot}/superweb/superweb.csproj"
             ],
             "isBuildCommand": true,
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "test",
+            "args": [
+                "${workspaceRoot}/superweb.test/superweb.test.csproj"
+            ],
+            "isTestCommand": true,
             "problemMatcher": "$msCompile"
         }
     ]
