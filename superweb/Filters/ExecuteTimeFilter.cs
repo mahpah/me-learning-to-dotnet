@@ -8,9 +8,9 @@ namespace superweb.Filters
 	{
 		public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
 		{
-			var start = DateTime.UtcNow.Millisecond;
+			var start = DateTime.UtcNow;
 			await next();
-			var time = DateTime.UtcNow.Millisecond - start;
+			var time = DateTime.UtcNow.Subtract(start).TotalMilliseconds;
 			context.HttpContext.Response.Headers.Add("X-execute-time", $"{time}");
 		}
 	}

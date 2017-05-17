@@ -21,7 +21,7 @@ namespace superweb
         {
             var configBuilder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = configBuilder.Build();
@@ -39,10 +39,21 @@ namespace superweb
                 options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
                 options.Filters.Add(new ExecuteTimeFilter());
             });
-            /* or
-             services.AddMvc()
-                .AddXmlSerializerFormatters();
-            */
+
+            // or
+            // services.AddMvc()
+            //     .AddXmlSerializerFormatters();
+
+            services.AddScoped<ITodoRepository, TodoRepository>();
+        }
+
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+            services.AddDbContext<PostgresDatabaseContext>(opt => opt.UseInMemoryDatabase());
+            services.AddMvc(options => {
+                options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+                options.Filters.Add(new ExecuteTimeFilter());
+            });
             services.AddScoped<ITodoRepository, TodoRepository>();
         }
 
@@ -51,7 +62,6 @@ namespace superweb
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
             app.UseMvc();
         }
     }
