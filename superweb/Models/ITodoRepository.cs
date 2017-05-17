@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace superweb.Models {
 	public interface ITodoRepository {
-		void Add(TodoItem item);
-		IEnumerable<TodoItem> GetAll();
-		TodoItem Find(long key);
-		void Remove(long key);
-		void Update(TodoItem item);
+		Task Add(TodoItem item);
+		Task<IEnumerable<TodoItem>> GetAll();
+		Task<TodoItem> Find(long key);
+		Task Remove(long key);
+		Task Update(TodoItem item);
 	}
 }

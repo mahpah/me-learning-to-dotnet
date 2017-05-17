@@ -6,51 +6,49 @@ using superweb.Models;
 using Moq;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace superweb.test
 {
     public class TodoControllerTest
     {
         [Fact]
-        public void GetReturnListOfTodo()
+        public async Task GetReturnListOfTodo()
         {
             var mockRepo = new Mock<ITodoRepository>();
             mockRepo.Setup(repo => repo.GetAll())
-                .Returns(GetTestTodoList());
+                .Returns(Task.FromResult(GetTestTodoList()));
             var controller = new TodoController(mockRepo.Object);
 
-            var result = controller.GetAll();
+            var result = await controller.GetAll();
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnedResult = Assert.IsType<List<TodoItem>>(okResult.Value);
             Assert.Equal(1, returnedResult.Count());
         }
 
         [Fact]
-        public void GetByIdShouldSendNotFoundWhenTodoItemNotFound()
+        public async void GetByIdShouldSendNotFoundWhenTodoItemNotFound()
         {
             var testId = 2;
             var mockRepo = new Mock<ITodoRepository>();
             mockRepo.Setup(repo => repo.Find(testId))
-                .Returns((TodoItem)null);
+                .Returns(Task.FromResult((TodoItem)null));
 
             var controller = new TodoController(mockRepo.Object);
-            var result = controller.GetById(testId);
+            var result = await controller.GetById(testId);
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
-        public void Create_SendBaedRequest_WhenModelInvalid()
+        public async Task Create_SendBaedRequest_WhenModelInvalid()
         {
         //Given
             var mockRepo = new Mock<ITodoRepository>();
-            mockRepo.Setup(repo => repo.GetAll())
-                .Returns(GetTestTodoList())
-                .Verifiable();
             var controller = new TodoController(mockRepo.Object);
 
         //When
             controller.ModelState.AddModelError("Name", "Required");
-            var result = controller.Create(new TodoItem());
+            var result = await controller.Create(new TodoItem());
 
         //Then
             Assert.IsType<BadRequestObjectResult>(result);

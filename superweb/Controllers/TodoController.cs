@@ -17,15 +17,15 @@ namespace superweb.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult GetAll()
+		public async Task<IActionResult> GetAll()
 		{
-			return Ok(_todoRepository.GetAll());
+			return Ok(await _todoRepository.GetAll());
 		}
 
 		[HttpGet("{id}", Name = "GetTodo")]
-		public IActionResult GetById(long id)
+		public async Task<IActionResult> GetById(long id)
 		{
-			var todoItem = _todoRepository.Find(id);
+			var todoItem = await _todoRepository.Find(id);
 			if (todoItem == null) {
 				return new NotFoundResult();
 			}
@@ -34,7 +34,7 @@ namespace superweb.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Create([FromBody] TodoItem item)
+		public async Task<IActionResult> Create([FromBody] TodoItem item)
 		{
 			if(!ModelState.IsValid) {
 				return BadRequest( ModelState );
@@ -44,20 +44,20 @@ namespace superweb.Controllers
 				return BadRequest();
 			}
 
-			_todoRepository.Add(item);
+			await _todoRepository.Add(item);
 
 			return new CreatedAtRouteResult("GetTodo", new { id = item.Key }, item);
 		}
 
 		[HttpPut("{id}")]
-		public IActionResult Update(long id, [FromBody] TodoItem item)
+		public async Task<IActionResult> Update(long id, [FromBody] TodoItem item)
 		{
 			if (item == null || item.Key != id)
 			{
 				return BadRequest();
 			}
 
-			var todo = _todoRepository.Find(id);
+			var todo = await _todoRepository.Find(id);
 			if (todo == null)
 			{
 				return NotFound();
@@ -69,14 +69,14 @@ namespace superweb.Controllers
 		}
 
 		[HttpDelete("{id}")]
-		public IActionResult Delete(long id) {
+		public async Task<IActionResult> Delete(long id) {
 			var todo = _todoRepository.Find(id);
 			if (todo == null)
 			{
 				return NotFound();
 			}
 
-			_todoRepository.Remove(id);
+			await _todoRepository.Remove(id);
 			return NoContent();
 		}
 	}

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using superweb.Models.Postgres;
 
 namespace superweb.Models
@@ -12,40 +14,35 @@ namespace superweb.Models
 		public TodoRepository(PostgresDatabaseContext context)
 		{
 			_context = context;
-
-			if (_context.TodoItems.Count() == 0)
-			{
-				Add(new TodoItem { Name = "Item 1" });
-			}
 		}
 
-		public void Add(TodoItem item)
+		public async Task Add(TodoItem item)
 		{
-			_context.TodoItems.Add(item);
-			_context.SaveChanges();
+			await _context.TodoItems.AddAsync(item);
+			await _context.SaveChangesAsync();
 		}
 
-		public TodoItem Find(long key)
+		public async Task<TodoItem> Find(long key)
 		{
-			return _context.TodoItems.FirstOrDefault(t => t.Key == key);
+			return await _context.TodoItems.FirstOrDefaultAsync(t => t.Key == key);
 		}
 
-		public IEnumerable<TodoItem> GetAll()
+		public async Task<IEnumerable<TodoItem>> GetAll()
 		{
-			return _context.TodoItems.ToList();
+			return await _context.TodoItems.ToListAsync();
 		}
 
-		public void Remove(long key)
+		public async Task Remove(long key)
 		{
 			var entity = _context.TodoItems.First(item => item.Key == key);
 			_context.TodoItems.Remove(entity);
-			_context.SaveChanges();
+			await _context.SaveChangesAsync();
 		}
 
-		public void Update(TodoItem item)
+		public async Task Update(TodoItem item)
 		{
 			_context.TodoItems.Update(item);
-			_context.SaveChanges();
+			await _context.SaveChangesAsync();
 		}
 	}
 }
