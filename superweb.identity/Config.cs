@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
 
@@ -28,7 +29,11 @@ namespace superweb.identity
 					new Secret("supreweb".Sha256())
 				},
 				AllowedGrantTypes = GrantTypes.ClientCredentials,
-				AllowedScopes = { "superweb", "email.get" }
+				AllowedScopes = {
+					"superweb",
+					"email.get",
+					IdentityServerConstants.StandardScopes.OpenId
+				}
 			};
 
 			var roClient = new Client
