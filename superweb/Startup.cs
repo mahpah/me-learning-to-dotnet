@@ -15,54 +15,57 @@ using superweb.Models.Postgres;
 
 namespace superweb
 {
-    public class Startup
-    {
-        public Startup(IHostingEnvironment env)
-        {
-            var configBuilder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = configBuilder.Build();
-        }
+	public class Startup
+	{
+		public Startup(IHostingEnvironment env)
+		{
+			var configBuilder = new ConfigurationBuilder()
+					.SetBasePath(env.ContentRootPath)
+					.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+					.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+					.AddEnvironmentVariables();
+			Configuration = configBuilder.Build();
+		}
 
-        public IConfigurationRoot Configuration { get; }
+		public IConfigurationRoot Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<PostgresDatabaseContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Postgres")));
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddDbContext<PostgresDatabaseContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Postgres")));
 
-            // Add framework services.
-            services.AddMvc(options => {
-                options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
-                options.Filters.Add(new ExecuteTimeFilter());
-            });
+			services.AddMvc(options =>
+			{
+				options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+				options.Filters.Add(new ExecuteTimeFilter());
+			});
+			services.AddScoped<ITodoRepository, TodoRepository>();
+		}
 
-            // or
-            // services.AddMvc()
-            //     .AddXmlSerializerFormatters();
+		public void ConfigureDevelopmentServices(IServiceCollection services)
+		{
+			services.AddDbContext<PostgresDatabaseContext>(opt => opt.UseInMemoryDatabase());
+			services.AddMvc(options =>
+			{
+				options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+				options.Filters.Add(new ExecuteTimeFilter());
+			});
+			services.AddScoped<ITodoRepository, TodoRepository>();
+		}
 
-            services.AddScoped<ITodoRepository, TodoRepository>();
-        }
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+		{
+			loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+			loggerFactory.AddDebug();
 
-        public void ConfigureDevelopmentServices(IServiceCollection services)
-        {
-            services.AddDbContext<PostgresDatabaseContext>(opt => opt.UseInMemoryDatabase());
-            services.AddMvc(options => {
-                options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
-                options.Filters.Add(new ExecuteTimeFilter());
-            });
-            services.AddScoped<ITodoRepository, TodoRepository>();
-        }
+			app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+			{
+                Authority = "http://localhost:5500",
+                RequireHttpsMetadata = false,
+                ApiName = "superweb",
+			});
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-        {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-            app.UseMvc();
-        }
-    }
+			app.UseMvc();
+		}
+	}
 }

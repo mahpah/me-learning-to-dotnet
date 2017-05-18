@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using superweb.Models;
 
 namespace superweb.Controllers
 {
 	[Route("api/[controller]")]
+	[Authorize]
 	public class TodoController: Controller
 	{
 		private readonly ITodoRepository _todoRepository;
