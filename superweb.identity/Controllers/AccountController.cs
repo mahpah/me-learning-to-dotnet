@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using superweb.identity.ViewModels;
 
 namespace superweb.identity.Controllers
 {
@@ -21,9 +22,14 @@ namespace superweb.identity.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(LoginViewModel model)
+        public IActionResult Login(LoginInputView model)
         {
-            return BadRequest();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ToString());
+            }
+
+            return Ok();
         }
     }
 }

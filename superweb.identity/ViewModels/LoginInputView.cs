@@ -1,6 +1,6 @@
-namespace superweb.identity.Controllers
+namespace superweb.identity.ViewModels
 {
-    public class LoginViewModel
+    public class LoginInputView
     {
         public string redirectUrl;
         public string username;
